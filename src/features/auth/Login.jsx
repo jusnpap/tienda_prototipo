@@ -23,7 +23,7 @@ const Login = ({ onLogin }) => {
       } else {
         onLogin(user);
       }
-    } catch (err) {
+    } catch {
       setError('Error al conectar con la base de datos');
     } finally {
       setLoading(false);

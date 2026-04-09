@@ -7,16 +7,16 @@ const Settings = ({ role, user, onUpdateUser }) => {
   const [newUser, setNewUser] = useState({ username: '', password: '', name: '', role: 'employee' });
   const [password, setPassword] = useState('');
 
+  const loadUsers = async () => {
+    const data = await dbRequest('users', 'getAll');
+    setUsers(data);
+  };
+
   useEffect(() => {
     if (role === 'owner') {
       loadUsers();
     }
   }, [role]);
-
-  const loadUsers = async () => {
-    const data = await dbRequest('users', 'getAll');
-    setUsers(data);
-  };
 
   const handleAddUser = async (e) => {
     e.preventDefault();
