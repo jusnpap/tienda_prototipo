@@ -172,7 +172,8 @@ const Sales = ({ user, initialView = 'register' }) => {
 
             {/* Product Grid */}
             <div style={{ flex: 1, overflowY: 'auto', paddingRight: '8px' }}>
-              <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '20px' }}>
+              <div className="product-grid">
+
                 {filteredProducts.map(p => (
                   <div 
                     key={p.id} 
