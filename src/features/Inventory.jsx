@@ -73,26 +73,43 @@ const Inventory = ({ role, initialFilter = null, onClearFilter }) => {
     const reader = new FileReader();
     reader.onload = async (event) => {
       const text = event.target.result;
-      const lines = text.split('\n');
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const lines = text.split(/\r?\n/).filter(line => line.trim());
+      if (lines.length < 2) return;
+
+      // Detect delimiter (usually , or ;)
+      const firstLine = lines[0];
+      const delimiter = firstLine.includes(';') ? ';' : ',';
+      const headers = firstLine.split(delimiter).map(h => h.trim().toLowerCase());
       
       const newProducts = [];
       for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
-        const values = lines[i].split(',').map(v => v.trim());
+        const values = lines[i].split(delimiter).map(v => v.trim());
         const product = {};
         headers.forEach((header, index) => {
           product[header] = values[index];
         });
 
         if (product.name) {
+          // Flexible date parsing (handle DD/MM/YYYY)
+          let formattedDate = product.expirydate || product.expiryDate || '';
+          if (formattedDate.includes('/')) {
+            const parts = formattedDate.split('/');
+            if (parts.length === 3) {
+              // Assume DD/MM/YYYY and convert to YYYY-MM-DD
+              const day = parts[0].padStart(2, '0');
+              const month = parts[1].padStart(2, '0');
+              const year = parts[2];
+              formattedDate = `${year}-${month}-${day}`;
+            }
+          }
+
           newProducts.push({
             name: product.name,
             category: product.category || 'General',
             price: parseFloat(product.price) || 0,
             stock: parseInt(product.stock) || 0,
-            minStock: parseInt(product.minstock) || 5, // handle case-sensitive header
-            expiryDate: product.expirydate || product.expiryDate || '',
+            minStock: parseInt(product.minstock || product.minStock) || 5,
+            expiryDate: formattedDate,
             lastUpdated: new Date().toISOString()
           });
         }
@@ -106,11 +123,11 @@ const Inventory = ({ role, initialFilter = null, onClearFilter }) => {
         alert(`✅ Se importaron ${newProducts.length} productos con éxito.`);
       } catch (error) {
         console.error('Error importing:', error);
-        alert('❌ Error al importar productos. Verifica el formato del archivo.');
+        alert('❌ Error al importar. Revisa que el archivo sea CSV delimitado por comas o punto y coma.');
       }
     };
     reader.readAsText(file);
-    e.target.value = ''; // Reset input
+    e.target.value = ''; 
   };
 
   return (
