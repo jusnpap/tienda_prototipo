@@ -46,8 +46,9 @@ function App() {
     switch (activePage) {
       case 'dashboard': return <Dashboard role={user?.role} onNavigate={navigateTo} />;
       case 'inventory': return <Inventory role={user?.role} initialFilter={inventoryFilter} onClearFilter={() => setInventoryFilter(null)} />;
-      case 'sales': return <Sales role={user?.role} initialView={salesView} />;
+      case 'sales': return <Sales user={user} initialView={salesView} />;
       case 'settings': return <Settings role={user?.role} user={user} onUpdateUser={setUser} />;
+
       default: return <Dashboard role={user?.role} onNavigate={navigateTo} />;
     }
   };
