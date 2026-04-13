@@ -142,8 +142,69 @@ input:focus {
   top: 0;
 }
 
+.mobile-only {
+  display: none !important;
+}
+
+.burger-menu {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  background: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .container { padding: 1rem; }
-  .sidebar { position: fixed; bottom: 0; left: 0; right: 0; height: auto; border-right: none; border-top: 1px solid var(--border-color); z-index: 100; }
+  
+  .sidebar { 
+    position: fixed; 
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100vh;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: var(--transition);
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(16px);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    backdrop-filter: blur(4px);
+  }
+
+  /* Allow cards with tables to scroll horizontally */
+  .card:has(table) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 600px;
+  }
+
+  .flex {
+    flex-wrap: wrap;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
 }
+

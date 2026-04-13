@@ -67,7 +67,50 @@ const Inventory = ({ role, initialFilter = null, onClearFilter }) => {
   });
 
   const handleImport = async (e) => {
-    // ... same logic
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const text = event.target.result;
+      const lines = text.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      
+      const newProducts = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const values = lines[i].split(',').map(v => v.trim());
+        const product = {};
+        headers.forEach((header, index) => {
+          product[header] = values[index];
+        });
+
+        if (product.name) {
+          newProducts.push({
+            name: product.name,
+            category: product.category || 'General',
+            price: parseFloat(product.price) || 0,
+            stock: parseInt(product.stock) || 0,
+            minStock: parseInt(product.minstock) || 5, // handle case-sensitive header
+            expiryDate: product.expirydate || product.expiryDate || '',
+            lastUpdated: new Date().toISOString()
+          });
+        }
+      }
+
+      try {
+        for (const p of newProducts) {
+          await dbRequest('products', 'add', p);
+        }
+        loadProducts();
+        alert(`✅ Se importaron ${newProducts.length} productos con éxito.`);
+      } catch (error) {
+        console.error('Error importing:', error);
+        alert('❌ Error al importar productos. Verifica el formato del archivo.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = ''; // Reset input
   };
 
   return (
