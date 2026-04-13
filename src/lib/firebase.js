@@ -1,7 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, enableIndexedDbPersistence } from "firebase/firestore";
 
-// Configuración de Firebase (El usuario debe completar esto en una consola real)
+// CONFIGURACIÓN DE FIREBASE
+// IMPORTANTE: Debes reemplazar estos valores con tus propias llaves desde la consola de Firebase
+// para que la sincronización entre dispositivos funcione correctamente.
 const firebaseConfig = {
   apiKey: "PLACEHOLDER",
   authDomain: "la-tienda-pwa.firebaseapp.com",
@@ -14,7 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Habilitar persistencia offline nativa de Firebase
+// Habilitar persistencia offline para que funcione sin internet temporalmente
 if (typeof window !== "undefined") {
   enableIndexedDbPersistence(db).catch((err) => {
     if (err.code === 'failed-precondition') {
@@ -26,3 +28,4 @@ if (typeof window !== "undefined") {
 }
 
 export { db };
+
