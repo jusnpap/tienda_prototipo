@@ -47,8 +47,24 @@ export const dbRequest = async (storeName, action, data) => {
       // Data is assumed to be the ID
       const docRef = doc(db, storeName, data);
       const snapshot = await getDoc(docRef);
+      
+      // Seed admin if not found
+      if (!snapshot.exists() && storeName === 'users' && data === 'admin') {
+        const adminData = {
+          username: 'admin',
+          password: 'admin123',
+          name: 'Dueño Principal',
+          role: 'owner',
+          status: 'active',
+          createdAt: new Date().toISOString()
+        };
+        await setDoc(docRef, adminData);
+        return { id: 'admin', ...adminData };
+      }
+      
       return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
     }
+
 
     case 'add': {
       // Using addDoc for auto-generated IDs
